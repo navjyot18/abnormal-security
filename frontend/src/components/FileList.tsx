@@ -50,8 +50,6 @@ export const FileList: React.FC = () => {
       uploaded_after: inputFilters.uploaded_after || undefined,
     };
 
-    console.log('Sanitized Filters:', sanitizedFilters);
-
     setFilters(sanitizedFilters);
   };
 
@@ -84,7 +82,6 @@ export const FileList: React.FC = () => {
   };
 
 
-  console.log('Files:', files);
   return (
     <div className="p-6">
       <h2 className="text-xl font-semibold text-gray-900 mb-4">Uploaded Files</h2>

@@ -37,7 +37,6 @@ export const fileService = {
     // Build the query parameters based on the filters
     const params: any = {};
 
-    console.log('Filters:', file_type, filename, size_min, size_max, uploaded_after);
     if (file_type) params.file_type = file_type;
     if (filename) params.filename = filename;
     if (size_min) params.size_min = size_min;
@@ -45,7 +44,6 @@ export const fileService = {
     if (uploaded_after) params.uploaded_after = uploaded_after;
 
     const response = await axios.get(`${API_URL}/files/`, { params });
-    console.log('Response:', response.data);
     return response.data;
   },
 
