@@ -14,7 +14,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null); // Creating the ref for file input
   const uploadMutation = useMutation({
     mutationFn: fileService.uploadFile,
-    onSuccess: () => {
+    onSuccess: (response) => {
       // Invalidate and refetch files query
       queryClient.invalidateQueries({ queryKey: ['files'] });
       setSelectedFile(null);
@@ -22,6 +22,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
       // Reset the input field to allow re-upload of the same file
       if (fileInputRef.current) {
         fileInputRef.current.value = ''; // Clear the input
+      }
+      if (response.count > 1) {
+        alert(`File already exists with the same name.`);
       }
     },
     onError: (error) => {
