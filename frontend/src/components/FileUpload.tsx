@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { fileService } from '../services/fileService';
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -11,7 +11,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const queryClient = useQueryClient();
-
+  const fileInputRef = useRef<HTMLInputElement | null>(null); // Creating the ref for file input
   const uploadMutation = useMutation({
     mutationFn: fileService.uploadFile,
     onSuccess: () => {
@@ -19,10 +19,18 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
       queryClient.invalidateQueries({ queryKey: ['files'] });
       setSelectedFile(null);
       onUploadSuccess();
+      // Reset the input field to allow re-upload of the same file
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''; // Clear the input
+      }
     },
     onError: (error) => {
       setError('Failed to upload file. Please try again.');
       console.error('Upload error:', error);
+      // Reset the input field to allow re-upload of the same file
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''; // Clear the input
+      }
     },
   });
 
@@ -69,6 +77,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
                   className="sr-only"
                   onChange={handleFileSelect}
                   disabled={uploadMutation.isPending}
+                  ref={fileInputRef} // Attach the ref to the input element
                 />
               </label>
               <p className="pl-1">or drag and drop</p>
@@ -76,16 +85,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
             <p className="text-xs text-gray-500">Any file up to 10MB</p>
           </div>
         </div>
-        {selectedFile && (
-          <div className="text-sm text-gray-600">
-            Selected: {selectedFile.name}
-          </div>
-        )}
-        {error && (
-          <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-            {error}
-          </div>
-        )}
+        {selectedFile && <div className="text-sm text-gray-600">Selected: {selectedFile.name}</div>}
+        {error && <div className="text-sm text-red-600 bg-red-50 p-2 rounded">{error}</div>}
         <button
           onClick={handleUpload}
           disabled={!selectedFile || uploadMutation.isPending}
@@ -103,14 +104,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path
                   className="opacity-75"
                   fill="currentColor"
@@ -126,4 +120,4 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
       </div>
     </div>
   );
-}; 
+};

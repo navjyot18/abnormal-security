@@ -45,6 +45,7 @@ export const fileService = {
     if (uploaded_after) params.uploaded_after = uploaded_after;
 
     const response = await axios.get(`${API_URL}/files/`, { params });
+    console.log('Response:', response.data);
     return response.data;
   },
 

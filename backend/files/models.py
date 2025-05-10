@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 import os
 import django_filters
-
+import hashlib
 
 def file_upload_path(instance, filename):
     """Generate file path for new file upload"""
@@ -18,12 +18,29 @@ class File(models.Model):
     file_type = models.CharField(max_length=100)
     size = models.BigIntegerField()
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    count = models.PositiveIntegerField(
+        default=1
+    )  # Track number of uploads for the same file
+    file_hash = models.CharField(max_length=64, unique=True)  # Store the file hash
 
     class Meta:
         ordering = ["-uploaded_at"]
 
     def __str__(self):
         return self.original_filename
+
+    def save(self, *args, **kwargs):
+        # Compute the hash of the file (e.g., using SHA256)
+        if not self.file_hash:
+            self.file_hash = self.generate_file_hash()
+        super().save(*args, **kwargs)
+
+    def generate_file_hash(self):
+        """Generate a hash based on the file content"""
+        hash_sha256 = hashlib.sha256()
+        for chunk in self.file.chunks():
+            hash_sha256.update(chunk)
+        return hash_sha256.hexdigest()
 
 
 class FileFilter(django_filters.FilterSet):

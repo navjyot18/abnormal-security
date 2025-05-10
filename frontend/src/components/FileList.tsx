@@ -83,6 +83,8 @@ export const FileList: React.FC = () => {
     }
   };
 
+
+  console.log('Files:', files);
   return (
     <div className="p-6">
       <h2 className="text-xl font-semibold text-gray-900 mb-4">Uploaded Files</h2>
@@ -169,6 +171,11 @@ export const FileList: React.FC = () => {
                       {file.file_type} • {(file.size / 1024).toFixed(2)} KB
                     </p>
                     <p className="text-sm text-gray-500">Uploaded {new Date(file.uploaded_at).toLocaleString()}</p>
+                    {file.count > 1 ? (
+                      <p className="text-sm" style={{ color: 'green', fontWeight: 'bold' }}>
+                        Storage Saved: {(file.count - 1) * file.size} KB
+                      </p>
+                    ) : null}
                   </div>
                   <div className="flex space-x-2">
                     <button
